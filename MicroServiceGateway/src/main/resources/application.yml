@@ -1,0 +1,56 @@
+info:
+  component: Edge MicroService GateWay Server
+  
+endpoints:
+  restart:
+    enabled: true
+  shutdown:
+    enabled: true
+  health:
+    sensitive: false
+
+zuul:
+  prefix: /api
+  ignoredServices: '*'
+  routes:
+    resource: 
+      path: /resource/**
+      serviceId: RESOURCESERVICE
+    account: 
+      path: /alert/**
+      serviceId: AlertService
+    customer: 
+      path: /order/**
+      serviceId: OrderService          
+  sensitive-headers: Cookie,Set-Cookie
+  security:
+  # Disable Spring Boot basic authentication
+    basic:
+      enabled: false
+    oauth2:
+      sso:
+        home:
+          secure: true
+          path: /,/**/*.html
+      client:
+        accessTokenUri: http://localhost:9000/authorize/oauth/token
+        userAuthorizationUri: http://localhost:9000/authorize/user
+        clientId: test
+        clientSecret: test
+ribbon:
+  eureka:
+    enabled: true
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+    registerWithEureka: false
+      
+server:
+  port: 8765
+
+logging:
+  level:
+    ROOT: INFO
+    org.springframework.web: DEBUG
